@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cita', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_cita');
+            $table->unsignedBigInteger('id_mascota');
+            $table->date('fecha');
+            $table->time('hora');
+            $table->unsignedBigInteger('id_servicio');
             $table->timestamps();
+    
+            $table->foreign('id_mascota')->references('id_mascota')->on('mascota')->onDelete('cascade');
+            $table->foreign('id_servicio')->references('id_servicio')->on('servicio')->onDelete('cascade');
         });
     }
 

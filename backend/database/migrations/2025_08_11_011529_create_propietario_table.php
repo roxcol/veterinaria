@@ -12,8 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('propietario', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_propietario');
+            $table->string('nombre',100);
+            $table->string('apellido_p',100);
+            $table->string('apellido_m',100);
+            $table->unsignedBigInteger('id_direccion');
+            $table->string('ci',20);
+            $table->string('telefono',20);
             $table->timestamps();
+
+            $table->foreign('id_direccion')->references('id_direccion')->on('direccion')->onDelete('cascade');
         });
     }
 
