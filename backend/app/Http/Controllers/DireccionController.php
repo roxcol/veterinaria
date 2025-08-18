@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Direccion;
+
 
 class DireccionController extends Controller
 {
@@ -12,6 +14,8 @@ class DireccionController extends Controller
     public function index()
     {
         //
+        return response()->json(Direccion::all());
+
     }
 
     /**
@@ -20,6 +24,18 @@ class DireccionController extends Controller
     public function store(Request $request)
     {
         //
+         // Validaciones para formulario
+         $request->validate([
+            'nom_direccion' => 'required|max:100',
+        ]);
+
+        $direccion = Direccion::create($request->all());
+
+        return response()->json([
+            'mensaje' => 'Dirección creada exitosamente',
+            'direccion' => $direccion
+        ], 201);
+
     }
 
     /**
@@ -28,6 +44,13 @@ class DireccionController extends Controller
     public function show(string $id)
     {
         //
+        $direccion = Direccion::find($id);
+
+        if (!$direccion) {
+            return response()->json(['mensaje' => 'Dirección no encontrada'], 404);
+        }
+
+        return response()->json($direccion, 200);
     }
 
     /**
@@ -36,6 +59,22 @@ class DireccionController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $direccion = Direccion::find($id);
+
+        if (!$direccion) {
+            return response()->json(['mensaje' => 'Dirección no encontrada'], 404);
+        }
+
+        $request->validate([
+            'nom_direccion' => 'required|max:100',
+        ]);
+
+        $direccion->update($request->all());
+
+        return response()->json([
+            'mensaje' => 'Dirección actualizada exitosamente',
+            'direccion' => $direccion
+        ], 200);
     }
 
     /**
@@ -44,5 +83,15 @@ class DireccionController extends Controller
     public function destroy(string $id)
     {
         //
+        $direccion = Direccion::find($id);
+
+        if (!$direccion) {
+            return response()->json(['mensaje' => 'Dirección no encontrada'], 404);
+        }
+
+        $direccion->delete();
+
+        return response()->json(['mensaje' => 'Dirección eliminada exitosamente'], 200);
+    
     }
 }

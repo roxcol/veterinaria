@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Servicio;
+
 
 class ServicioController extends Controller
 {
@@ -12,6 +14,8 @@ class ServicioController extends Controller
     public function index()
     {
         //
+        return response()->json(Servicio::all());
+
     }
 
     /**
@@ -20,6 +24,16 @@ class ServicioController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'nom_servicio' => 'required|max:150'
+        ]);
+
+        $servicio = Servicio::create($request->all());
+
+        return response()->json([
+            'mensaje' => 'Servicio creado exitosamente',
+            'servicio' => $servicio
+        ], 201);
     }
 
     /**
@@ -28,6 +42,13 @@ class ServicioController extends Controller
     public function show(string $id)
     {
         //
+        $servicio = Servicio::find($id);
+
+        if (!$servicio) {
+            return response()->json(['mensaje' => 'Servicio no encontrado'], 404);
+        }
+
+        return response()->json($servicio, 200);
     }
 
     /**
@@ -36,6 +57,22 @@ class ServicioController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $servicio = Servicio::find($id);
+
+        if (!$servicio) {
+            return response()->json(['mensaje' => 'Servicio no encontrado'], 404);
+        }
+
+        $request->validate([
+            'nom_servicio' => 'required|max:150'
+        ]);
+
+        $servicio->update($request->all());
+
+        return response()->json([
+            'mensaje' => 'Servicio actualizado exitosamente',
+            'servicio' => $servicio
+        ], 200);
     }
 
     /**
@@ -44,5 +81,14 @@ class ServicioController extends Controller
     public function destroy(string $id)
     {
         //
+        $servicio = Servicio::find($id);
+
+        if (!$servicio) {
+            return response()->json(['mensaje' => 'Servicio no encontrado'], 404);
+        }
+
+        $servicio->delete();
+
+        return response()->json(['mensaje' => 'Servicio eliminado exitosamente'], 200);
     }
 }

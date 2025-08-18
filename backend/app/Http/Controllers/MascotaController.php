@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Mascota;
+
 
 class MascotaController extends Controller
 {
@@ -12,6 +14,8 @@ class MascotaController extends Controller
     public function index()
     {
         //
+        return response()->json(Mascota::all());
+
     }
 
     /**
@@ -20,6 +24,20 @@ class MascotaController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'nom_mascota' => 'required|max:100',
+            'id_raza' => 'required|exists:raza,id_raza',
+            'edad' => 'required|integer|min:0',
+            'color' => 'required|max:30',
+            'id_propietario' => 'required|exists:propietario,id_propietario'
+        ]);
+
+        $mascota = Mascota::create($request->all());
+
+        return response()->json([
+            'mensaje' => 'Mascota creada exitosamente',
+            'mascota' => $mascota
+        ], 201);
     }
 
     /**
@@ -28,6 +46,13 @@ class MascotaController extends Controller
     public function show(string $id)
     {
         //
+        $mascota = Mascota::find($id);
+
+        if (!$mascota) {
+            return response()->json(['mensaje' => 'Mascota no encontrada'], 404);
+        }
+
+        return response()->json($mascota, 200);
     }
 
     /**
@@ -36,6 +61,26 @@ class MascotaController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $mascota = Mascota::find($id);
+
+        if (!$mascota) {
+            return response()->json(['mensaje' => 'Mascota no encontrada'], 404);
+        }
+
+        $request->validate([
+            'nom_mascota' => 'required|max:100',
+            'id_raza' => 'required|exists:raza,id_raza',
+            'edad' => 'required|integer|min:0',
+            'color' => 'required|max:30',
+            'id_propietario' => 'required|exists:propietario,id_propietario'
+        ]);
+
+        $mascota->update($request->all());
+
+        return response()->json([
+            'mensaje' => 'Mascota actualizada exitosamente',
+            'mascota' => $mascota
+        ], 200);
     }
 
     /**
@@ -44,5 +89,14 @@ class MascotaController extends Controller
     public function destroy(string $id)
     {
         //
+        $mascota = Mascota::find($id);
+
+        if (!$mascota) {
+            return response()->json(['mensaje' => 'Mascota no encontrada'], 404);
+        }
+
+        $mascota->delete();
+
+        return response()->json(['mensaje' => 'Mascota eliminada exitosamente'], 200);
     }
 }

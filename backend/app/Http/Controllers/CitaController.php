@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cita;
+
 
 class CitaController extends Controller
 {
@@ -12,6 +14,8 @@ class CitaController extends Controller
     public function index()
     {
         //
+        return response()->json(Cita::all());
+
     }
 
     /**
@@ -20,6 +24,19 @@ class CitaController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'id_mascota' => 'required|exists:mascota,id_mascota',
+            'fecha' => 'required|date',
+            'hora' => 'required|date_format:H:i',
+            'id_servicio' => 'required|exists:servicio,id_servicio'
+        ]);
+
+        $cita = Cita::create($request->all());
+
+        return response()->json([
+            'mensaje' => 'Cita creada exitosamente',
+            'cita' => $cita
+        ], 201);
     }
 
     /**
@@ -28,6 +45,13 @@ class CitaController extends Controller
     public function show(string $id)
     {
         //
+        $cita = Cita::find($id);
+
+        if (!$cita) {
+            return response()->json(['mensaje' => 'Cita no encontrada'], 404);
+        }
+
+        return response()->json($cita, 200);
     }
 
     /**
@@ -36,6 +60,25 @@ class CitaController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $cita = Cita::find($id);
+
+        if (!$cita) {
+            return response()->json(['mensaje' => 'Cita no encontrada'], 404);
+        }
+
+        $request->validate([
+            'id_mascota' => 'required|exists:mascota,id_mascota',
+            'fecha' => 'required|date',
+            'hora' => 'required|date_format:H:i',
+            'id_servicio' => 'required|exists:servicio,id_servicio'
+        ]);
+
+        $cita->update($request->all());
+
+        return response()->json([
+            'mensaje' => 'Cita actualizada exitosamente',
+            'cita' => $cita
+        ], 200);
     }
 
     /**
@@ -44,5 +87,14 @@ class CitaController extends Controller
     public function destroy(string $id)
     {
         //
+        $cita = Cita::find($id);
+
+        if (!$cita) {
+            return response()->json(['mensaje' => 'Cita no encontrada'], 404);
+        }
+
+        $cita->delete();
+
+        return response()->json(['mensaje' => 'Cita eliminada exitosamente'], 200);
     }
 }

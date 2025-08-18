@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Propietario;
+
 
 class PropietarioController extends Controller
 {
@@ -12,6 +14,7 @@ class PropietarioController extends Controller
     public function index()
     {
         //
+        return response()->json(Propietario::all());
     }
 
     /**
@@ -19,7 +22,22 @@ class PropietarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validaciones para formulario
+        $request->validate([
+            'nombre' => 'required|max:100',
+            'apellido_p' => 'required|max:100',
+            'apellido_m' => 'required|max:100',
+            'id_direccion' => 'required|exists:direccion,id_direccion',
+            'ci' => 'required|max:20',
+            'telefono' => 'required|max:20',
+        ]);
+
+        $propietario = Propietario::create($request->all());
+
+        return response()->json([
+            'mensaje' => 'Propietario creado exitosamente',
+            'propietario' => $propietario
+        ], 201);
     }
 
     /**
@@ -28,6 +46,13 @@ class PropietarioController extends Controller
     public function show(string $id)
     {
         //
+        $propietario = Propietario::find($id);
+
+        if (!$propietario) {
+            return response()->json(['mensaje' => 'Propietario no encontrado'], 404);
+        }
+
+        return response()->json($propietario, 200);
     }
 
     /**
@@ -36,6 +61,27 @@ class PropietarioController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $propietario = Propietario::find($id);
+
+        if (!$propietario) {
+            return response()->json(['mensaje' => 'Propietario no encontrado'], 404);
+        }
+
+        $request->validate([
+            'nombre' => 'required|max:100',
+            'apellido_p' => 'required|max:100',
+            'apellido_m' => 'required|max:100',
+            'id_direccion' => 'required|exists:direccion,id_direccion',
+            'ci' => 'required|max:20',
+            'telefono' => 'required|max:20',
+        ]);
+
+        $propietario->update($request->all());
+
+        return response()->json([
+            'mensaje' => 'Propietario actualizado exitosamente',
+            'propietario' => $propietario
+        ], 200);
     }
 
     /**
@@ -44,5 +90,15 @@ class PropietarioController extends Controller
     public function destroy(string $id)
     {
         //
+        $propietario = Propietario::find($id);
+
+        if (!$propietario) {
+            return response()->json(['mensaje' => 'Propietario no encontrado'], 404);
+        }
+
+        $propietario->delete();
+
+        return response()->json(['mensaje' => 'Propietario eliminado exitosamente'], 200);
+    
     }
 }
