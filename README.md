@@ -1,4 +1,4 @@
-# veterinaria
+# VETERINARIA
 Fulltack Project
 # Grupo JavaScript
 # Clinica Veterinaria "EXOVET"
